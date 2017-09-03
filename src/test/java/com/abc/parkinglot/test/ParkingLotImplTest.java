@@ -1,5 +1,7 @@
 package com.abc.parkinglot.test;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -98,7 +100,7 @@ public class ParkingLotImplTest {
 	}
 	
 	@Test
-	public void test07TestStatusSuccess() throws ParkingLotException {
+	public void test07StatusSuccess() throws ParkingLotException {
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
 		
 		impl.initialize(3);
@@ -111,7 +113,7 @@ public class ParkingLotImplTest {
 	}
 	
 	@Test
-	public void test08TestStatusEmptySuccess() throws ParkingLotException {
+	public void test08StatusEmptySuccess() throws ParkingLotException {
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
 		
 		impl.initialize(3);
@@ -120,6 +122,90 @@ public class ParkingLotImplTest {
 		Assert.assertEquals(slots, 0);
 	}
 	
+	@Test
+	public void test09getRegNumsByColor() throws ParkingLotException {
+		ParkingLotImpl impl = ParkingLotImpl.getInstance();
+		
+		impl.initialize(3);
+		impl.park("KA-01-HH-1234", "White");
+		impl.park("KA-01-HH-9999", "White");
+		impl.park("KA-01-BB-0001", "Block");
+		
+		List<String> regNums = impl.getRegistrationNumbersByColor("White");
+		Assert.assertEquals(regNums.size(), 2);
+		
+		Assert.assertTrue(regNums.contains("KA-01-HH-1234"));
+		Assert.assertTrue(regNums.contains("KA-01-HH-9999"));
+	}
+	
+	@Test
+	public void test10getRegNumsByColorEmpty() throws ParkingLotException {
+		ParkingLotImpl impl = ParkingLotImpl.getInstance();
+		
+		impl.initialize(3);
+		impl.park("KA-01-HH-1234", "White");
+		impl.park("KA-01-HH-9999", "White");
+		impl.park("KA-01-BB-0001", "Block");
+		
+		exception.expect(ParkingLotException.class);
+		List<String> regNums = impl.getRegistrationNumbersByColor("Blue");
+	}
+	
+	@Test
+	public void test11getSlotsByColor() throws ParkingLotException {
+		ParkingLotImpl impl = ParkingLotImpl.getInstance();
+		
+		impl.initialize(3);
+		impl.park("KA-01-HH-1234", "White");
+		impl.park("KA-01-HH-9999", "White");
+		impl.park("KA-01-BB-0001", "Block");
+		
+		List<Integer> slotNums = impl.getSlotNumbersByColor("White");
+		Assert.assertEquals(slotNums.size(), 2);
+		
+		Assert.assertTrue(slotNums.contains(1));
+		Assert.assertTrue(slotNums.contains(2));
+	}
+	
+	@Test
+	public void test12getSlotsByColorEmpty() throws ParkingLotException {
+		ParkingLotImpl impl = ParkingLotImpl.getInstance();
+		
+		impl.initialize(3);
+		impl.park("KA-01-HH-1234", "White");
+		impl.park("KA-01-HH-9999", "White");
+		impl.park("KA-01-BB-0001", "Block");
+		
+		exception.expect(ParkingLotException.class);
+		List<Integer> slotNums = impl.getSlotNumbersByColor("Blue");
+	}
+	
+	@Test
+	public void test13getSlotByRegNum() throws ParkingLotException {
+		ParkingLotImpl impl = ParkingLotImpl.getInstance();
+		
+		impl.initialize(3);
+		impl.park("KA-01-HH-1234", "White");
+		impl.park("KA-01-HH-9999", "White");
+		impl.park("KA-01-BB-0001", "Block");
+		
+		int slot = impl.getSlotNumberByRegistrationNumber("KA-01-HH-9999");
+		Assert.assertEquals(slot, 2);
+	}
+
+	@Test
+	public void test14getSlotByRegNumNotFound() throws ParkingLotException {
+		ParkingLotImpl impl = ParkingLotImpl.getInstance();
+		
+		impl.initialize(3);
+		impl.park("KA-01-HH-1234", "White");
+		impl.park("KA-01-HH-9999", "White");
+		impl.park("KA-01-BB-0001", "Block");
+		
+		exception.expect(ParkingLotException.class);
+		int slot = impl.getSlotNumberByRegistrationNumber("MA-01-HH-9999");
+	}
+
 	@After
 	public void afterEachTest() {
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();

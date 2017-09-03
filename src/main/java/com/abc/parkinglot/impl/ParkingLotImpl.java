@@ -1,10 +1,13 @@
 package com.abc.parkinglot.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.abc.parkinglot.cache.ParkingSlotCache;
 import com.abc.parkinglot.exception.ParkingLotException;
 import com.abc.parkinglot.model.ParkingSlot;
 import com.abc.parkinglot.model.Vehicle;
@@ -12,6 +15,8 @@ import com.abc.parkinglot.model.Vehicle;
 import static com.abc.parkinglot.exception.ExceptionMessages.*;
 
 public class ParkingLotImpl {
+	
+	private ParkingSlotCache cache = ParkingSlotCache.getInstance();
 
 	private int totalSlots;
 	private Set<ParkingSlot> slots;
@@ -43,6 +48,8 @@ public class ParkingLotImpl {
 		for (int i = 1; i <= totalSlots; i++) {
 			queue.offer(i);
 		}
+		
+		System.out.println("Created parking lot with " + totalSlots + " slots");
 	}
 
 	public void park(String registrationNumber, String color) throws ParkingLotException {
@@ -62,6 +69,9 @@ public class ParkingLotImpl {
 		ParkingSlot parkingSlot = new ParkingSlot(slot);
 		parkingSlot.setVehicle(vehicle);
 		slots.add(parkingSlot);
+		
+		//add it to cache
+		cache.add(parkingSlot);
 
 		System.out.println("Allocated Slot number: " + slot);
 	}
@@ -69,9 +79,11 @@ public class ParkingLotImpl {
 	public void leave(int slot) throws ParkingLotException {
 		ParkingSlot parkingSlot = new ParkingSlot(slot);
 		if (slots.contains(parkingSlot)) {
+			//Remove it from cache
+			cache.remove(slot);
+			
 			slots.remove(parkingSlot);
 			queue.add(slot);
-
 			System.out.println("Slot number " + slot + " is free");
 		} else {
 			throw new ParkingLotException(ERROR_PARKING_SLOT_ALREADY_AVAILABLE);
@@ -94,9 +106,48 @@ public class ParkingLotImpl {
 		return slots.size();
 	}
 	
+	public List<String> getRegistrationNumbersByColor(String color) throws ParkingLotException {
+		List<ParkingSlot> slots = cache.getByColor(color);
+		if (slots == null || slots.isEmpty()) {
+			throw new ParkingLotException("Not Found.");
+		}
+		
+		List<String> results = new ArrayList<String>();
+		for (int i = 0; i < slots.size(); i++) {
+			ParkingSlot slot = slots.get(i);
+			results.add(slot.getVehicle().getRegistrationNumber());
+		}
+		
+		return results;
+	}
+	
+	public List<Integer> getSlotNumbersByColor(String color) throws ParkingLotException {
+		List<ParkingSlot> slots = cache.getByColor(color);
+		if (slots == null || slots.isEmpty()) {
+			throw new ParkingLotException("Not Found.");
+		}
+		
+		List<Integer> results = new ArrayList<Integer>();
+		for (int i = 0; i < slots.size(); i++) {
+			ParkingSlot slot = slots.get(i);
+			results.add(slot.getSlot());
+		}
+		
+		return results;
+	}
+	
+	public int getSlotNumberByRegistrationNumber(String regNum) throws ParkingLotException {
+		ParkingSlot parkingSlot = cache.getByRegNum(regNum);
+		if (parkingSlot == null) {
+			throw new ParkingLotException("Not Found.");
+		}
+		return parkingSlot.getSlot();
+	}
+	
 	public void reset() {
 		slots = null;
 		queue = null;
+		cache.reset();
 	}
 
 	private void verifySlotAvailable() throws ParkingLotException {
