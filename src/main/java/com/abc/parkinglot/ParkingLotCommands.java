@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 import com.abc.parkinglot.exception.ParkingLotException;
 import com.abc.parkinglot.impl.ParkingLotImpl;
 
-public class ParkingLotCLI {
+public abstract class ParkingLotCommands {
 	
 	private static final String STR_SPACE = " ";
 	private static final String CMD_CREATE_PARKING_LOT = "create_parking_lot";
@@ -18,20 +18,8 @@ public class ParkingLotCLI {
 	private static final String CMD_SLOT_NUM_BY_COLOR = "slot_numbers_for_cars_with_colour";
 	private static final String CMD_SLOT_NUM_BY_REG_NUM = "slot_number_for_registration_number";
 	
-	public void run() {
-		while(true) {
-			System.out.println("\nInput:");
-			Scanner scanner = new Scanner(System.in);
-			String input = scanner.nextLine();
-			
-			StringTokenizer tokenizer = new StringTokenizer(input, STR_SPACE);
-			
-			processCommand(tokenizer);
-			
-		}
-	}
-
-	private void processCommand(StringTokenizer tokenizer) {
+	protected void processCommand(String input) {
+		StringTokenizer tokenizer = new StringTokenizer(input, STR_SPACE);
 		String token = tokenizer.nextToken();
 		
 		switch(token) {
@@ -66,7 +54,7 @@ public class ParkingLotCLI {
 		
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
 		try {
-			System.out.println("\nOutput:");
+			//System.out.println("\nOutput:");
 			impl.initialize(new Integer(slot));			
 		} catch (ParkingLotException ple) {
 			System.out.println(ple.getMessage());
@@ -86,7 +74,7 @@ public class ParkingLotCLI {
 		
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
 		try {
-			System.out.println("\nOutput:");
+			//System.out.println("\nOutput:");
 			impl.park(regNum, color);		
 		} catch (ParkingLotException ple) {
 			System.out.println(ple.getMessage());
@@ -101,7 +89,7 @@ public class ParkingLotCLI {
 		
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
 		try {
-			System.out.println("\nOutput:");
+			//System.out.println("\nOutput:");
 			impl.leave(new Integer(slot));		
 		} catch (ParkingLotException ple) {
 			System.out.println(ple.getMessage());
@@ -110,7 +98,7 @@ public class ParkingLotCLI {
 	
 	private void status() {
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
-		System.out.println("\nOutput:");
+		//System.out.println("\nOutput:");
 		impl.status();
 	}
 	
@@ -120,7 +108,7 @@ public class ParkingLotCLI {
 		}
 		String color = tokenizer.nextToken();
 		
-		System.out.println("\nOutput:\n");
+		//System.out.println("\nOutput:\n");
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
 		
 		try {
@@ -134,6 +122,7 @@ public class ParkingLotCLI {
 		} catch (ParkingLotException ple) {
 			System.out.println(ple.getMessage());
 		}
+		System.out.println("");
 	}
 
 	private void getSlotNumsByColor(StringTokenizer tokenizer) {
@@ -142,7 +131,7 @@ public class ParkingLotCLI {
 		}
 		String color = tokenizer.nextToken();
 		
-		System.out.println("\nOutput:\n");
+		//System.out.println("\nOutput:\n");
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
 		try {
 			List<Integer> slotNums = impl.getSlotNumbersByColor(color);
@@ -164,7 +153,7 @@ public class ParkingLotCLI {
 		String regNum = tokenizer.nextToken();
 		
 		ParkingLotImpl impl = ParkingLotImpl.getInstance();
-		System.out.println("\nOutput:\n");
+		//System.out.println("\nOutput:\n");
 		try {
 			int slot = impl.getSlotNumberByRegistrationNumber(regNum);
 			System.out.println(slot);
@@ -173,9 +162,4 @@ public class ParkingLotCLI {
 		}
 	}
 
-
-	public static void main(String[] args) throws Exception {
-		ParkingLotCLI cli = new ParkingLotCLI();
-		cli.run();
-	}
 }

@@ -2,15 +2,21 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'application'
 
-mainClassName = 'com.abc.parkinglot.ParkingLotCLI'
+mainClassName = 'com.abc.parkinglot.ParkingLotExecutor'
 
 repositories {
     mavenCentral()
 }
 
 jar {
-    baseName = 'parking-lot'
-    version =  '1.0'
+   baseName = 'parking-lot'
+   version =  '1.0'
+   manifest {
+      attributes(
+         "Manifest-Version": "1.0",
+         "Main-Class": "com.abc.parkinglot.ParkingLotExecutor" 
+      )
+   }
 }
 
 sourceCompatibility = 1.8
